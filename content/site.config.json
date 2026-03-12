@@ -4,10 +4,10 @@
     "subjectLine": "з дисципліни «WEB-ОРІЄНТОВАНІ ТЕХНОЛОГІЇ. BACKEND РОЗРОБКИ»"
   },
   "student": {
-    "fullName": "Прізвище Ім’я По батькові",
-    "group": "Іx-xx",
-    "gender": "male",
-    "photo": "/students/chad.jpg"
+    "fullName": "Темко Валерія Олександрівна",
+    "group": "ІС-32",
+    "gender": "female",
+    "photo": "/students/photo.png"
   },
   "toc": {
     "minDepth": 2,
