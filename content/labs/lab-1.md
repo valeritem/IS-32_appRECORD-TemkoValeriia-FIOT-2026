@@ -944,6 +944,129 @@ export const PostItem = ({ post }) => {
 ![2](/assets/labs/lab-1/structure(2).jpg)
 
 
+## ЧАСТИНА 2. Налаштування середовища Node.js. Основи роботи з Express.js
+У другій частині лабораторної роботи було виконано завдання зі створення базового HTTP-сервера за допомогою Node.js та фреймворку Express.js, а також реалізовано REST API для роботи з колекцією студентів.
+
+### Завдання 1. Створення Node.js проєкту та встановлення Express
+Ініціалізуємо Node.js проєкт в директорії серверної частини (lab1_app/server) за допомогою команди: 
+```
+npm init -y
+```
+та встановлюємо бібліотеку Express.js:
+```
+npm install express
+```
+
+### Завдання 2. Створення HTTP-сервера
+Створюємо файл index.js, підключаємо Express та налаштовуємо базовий маршрут для кореневого URL (/), який повертає повідомлення.
+```
+const express = require('express');
+const app = express();
+
+const PORT = 3000;
+
+app.get('/', (req, res) => {
+    res.send('Hello from Node.js server');
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+```
+
+![Повідомлення від Node.js сервера ](/assets/labs/lab-1/screenshot-message-server.png)
+
+### Завдання 3. Маршрут GET /students
+Створюємо масив об’єктів студентів (як імітацію бази даних) та реалізовуємо маршрут GET /students, який повертає цей список у форматі JSON.
+```
+app.use(express.json()); 
+
+let students = [
+    { id: 1, name: "Petrenko Ivan", group: "IS-31" },
+    { id: 2, name: "Shevchenko Maria", group: "IS-32" },
+    { id: 3, name: "Zelinskiy Ihor", group: "IS-33" },
+
+];
+
+app.get('/students', (req, res) => {
+    res.json(students);
+});
+
+```
+![Відповідь сервера GET /students ](/assets/labs/lab-1/screenshot-server-response.png)
+
+### Завдання 4. Маршрут POST /students
+Створюємо маршрут POST /students, який приймає дані у форматі JSON, перевіряє їх на наявність обов’язкових полів (id, name, group), перевіряє чи немає дублювання ідентифікатора, та додає нового студента до масиву.
+```
+app.post('/students', (req, res) => {
+    const { id, name, group } = req.body;
+
+    if (!id || !name || !group) {
+        return res.status(400).json({
+            message: "All fields (id, name, group) are required"
+        });
+    }
+
+    const existingStudent = students.find(s => s.id === id);
+    if (existingStudent) {
+        return res.status(400).json({
+            message: "Student with this id already exists"
+        });
+    }
+
+    const newStudent = { id, name, group };
+    students.push(newStudent);
+
+    res.status(201).json({
+        message: "Student added",
+        student: newStudent
+    });
+});
+
+```
+
+### Завдання 5. PUT та DELETE
+Оновлення студента: PUT /students/:id — для оновлення даних студента
+```
+app.put('/students/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const updatedData = req.body;
+
+    const student = students.find(s => s.id === id);
+
+    if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+    }
+
+    student.name = updatedData.name || student.name;
+    student.group = updatedData.group || student.group;
+
+    res.json({
+        message: "Student updated",
+        student
+    });
+});
+
+```
+Видалення студента: DELETE /students/:id — для видалення студента
+```
+app.delete('/students/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const index = students.findIndex(s => s.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({ message: "Student not found" });
+    }
+
+    students.splice(index, 1);
+
+    res.json({ message: "Student deleted" });
+});
+
+```
+![Відпрацювання тестувань запитів API  ](/assets/labs/lab-1/screenshot-student-api-demo.png)
+
 ## Висновки
 
 У ході виконання роботи було проаналізовано предметну область та обґрунтовано актуальність розробки веб-застосунку типу мініблогу. Визначено мету роботи, об’єкт і предмет дослідження, а також сформульовано основні завдання, необхідні для досягнення поставленої мети.
